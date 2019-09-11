@@ -1,14 +1,18 @@
 # Complete Shadow Symbolic Execution with Java PathFinder
 
-This repository provides the tool and the evaluation subjects for the paper "Complete Shadow Symbolic Execution with Java PathFinder" accepted for the [Java PathFinder workshop 2019](https://2019.ase-conferences.org/home/jpf-2019). A pre-print of the paper can be found on TODO.
+This repository provides the tool ShadowJPF+ and the evaluation subjects for the paper *Complete Shadow Symbolic Execution with Java PathFinder* accepted for the [Java PathFinder workshop 2019](https://2019.ase-conferences.org/home/jpf-2019), co-located with [ASE 2019](https://2019.ase-conferences.org). The paper will be published in the ACM SIGSOFT Software Engineering Notes, and a pre-print will be available soon.
+
+Authors: [Yannic Noller](https://yannicnoller.github.io), [Hoang Lam Nguyen](https://github.com/hoanglam-nguyen), [Minxing Tang](https://www.informatik.hu-berlin.de/de/institut/mitarbeiter/1691704), [Timo Kehrer](https://www.informatik.hu-berlin.de/de/forschung/gebiete/mse/mitarb/kehrerti.html) and [Lars Grunske](https://www.informatik.hu-berlin.de/de/Members/lars-grunske).
 
 The repository includes:
 * the experiment subjects: [jpf-shadow-plus/src/examples/jpf2019](./jpf-shadow-plus/src/examples/jpf2019),
 * the raw output files can be found in the archive: [evaluation-results-archive.zip](evaluation-results-archive.zip),
-* the source code for all parts: jpf-core, jpf-symbc, jpf-shadow, and jpf-shadow-plus,
+* the source code for ShadowJPF+: [jpf-core](jpf-core), [jpf-symbc](jpf-symbc), and [jpf-shadow-plus](jpf-shadow-plus),
+* the source code for ShadowJPF to rerun our evaluation: [jpf-shadow](jpf-shadow),
 * and an [install](install.sh) script.
 
 ## Tool
+JPFShadow+ is built on top of the [Symbolic PathFinder](https://github.com/SymbolicPathFinder/jpf-symbc) and its shadow symbolic execution extension [JPFShadow](https://github.com/hub-se/jpf-shadow).
 
 ### Requirements
 * Git, Ant, Build-Essentials
