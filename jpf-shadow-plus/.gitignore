@@ -1,0 +1,12 @@
+syntax: glob
+
+build.properties
+nbproject/private/*
+build/*
+evaluation-results/*
+dist/*
+*.class
+.version
+activity*.png
+*~
+*.DS_Store

@@ -1,0 +1,7 @@
+build.properties
+build/*
+dist/*
+*.class
+.version
+*.DS_Store
+*.log
