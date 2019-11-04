@@ -1,6 +1,6 @@
 # Complete Shadow Symbolic Execution with Java PathFinder
 
-This repository provides the tool ShadowJPF+ and the evaluation subjects for the paper *Complete Shadow Symbolic Execution with Java PathFinder* accepted for the [Java PathFinder workshop 2019](https://2019.ase-conferences.org/home/jpf-2019), co-located with [ASE 2019](https://2019.ase-conferences.org). The paper will be published in the ACM SIGSOFT Software Engineering Notes, and a pre-print will be available soon.
+This repository provides the tool ShadowJPF+ and the evaluation subjects for the paper *Complete Shadow Symbolic Execution with Java PathFinder* accepted for the [Java PathFinder workshop 2019](https://2019.ase-conferences.org/home/jpf-2019), co-located with [ASE 2019](https://2019.ase-conferences.org). The paper will be published in the ACM SIGSOFT Software Engineering Notes, and a pre-print is available [here](https://yannicnoller.github.io/publications/jpf2019_noller_jpfshadow+.pdf).
 
 Authors: [Yannic Noller](https://yannicnoller.github.io), [Hoang Lam Nguyen](https://github.com/hoanglam-nguyen), [Minxing Tang](https://www.informatik.hu-berlin.de/de/institut/mitarbeiter/1691704), [Timo Kehrer](https://www.informatik.hu-berlin.de/de/forschung/gebiete/mse/mitarb/kehrerti.html) and [Lars Grunske](https://www.informatik.hu-berlin.de/de/Members/lars-grunske).
 
