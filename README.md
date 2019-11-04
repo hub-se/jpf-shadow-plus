@@ -39,6 +39,10 @@ DYLD_LIBRARY_PATH=jpf-symbc/lib java -cp "jpf-shadow/build/*:jpf-core/build/*:jp
 
 Step (3) and (4) store all results in the folder ./evaluations-results/. In order to review the files, please scroll down to the end of each file and check the generated path conditions. You may also for "statistics" to get the internal statistics of SPF.
 
+If you want to modify the benchmark execution of jpf-shadow-plus: the class [RunnerShadowPlus](jpf-shadow-plus/src/main/gov/nasa/jpf/shadow/RunnerShadowPlus.java) defines in its main method which subjects will be executed, and the class [SymExParameter](jpf-shadow-plus/src/main/gov/nasa/jpf/shadow/SymExParameter.java) defines the properties of the subjects. You can similarly adapt the benchmark execution of jpf-shadow.
+Note: You have to re-compile after the modifications.
+
+
 ## Maintainers
 
 * **Yannic Noller** (yannic.noller at acm.org)
