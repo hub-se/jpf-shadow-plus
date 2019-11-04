@@ -5,3 +5,4 @@ dist/*
 .version
 *.DS_Store
 *.log
+evaluation-results/*

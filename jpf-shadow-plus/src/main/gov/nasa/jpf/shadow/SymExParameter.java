@@ -75,7 +75,7 @@ public class SymExParameter {
 
     public static final SymExParameter Rational_abs = new SymExParameter("${jpf-shadow-plus}/build/jpf-shadow-plus.jar",
             "${jpf-shadow-plus}/src/examples", "jpf2019.rational.abs", "Rational", "main", "abs(sym)", 5, "",
-            "evaluation-results/01_Rational/abs/shadow-plus-results/", null, false, "");
+            "evaluation-results/01_Rational/abs/shadow-plus-results/", null, false, "abs");
 
     public static final SymExParameter Rational_gcd = new SymExParameter("${jpf-shadow-plus}/build/jpf-shadow-plus.jar",
             "${jpf-shadow-plus}/src/examples", "jpf2019.rational.gcd", "Rational", "main", "gcd(sym#sym)", 22, "",
@@ -86,7 +86,7 @@ public class SymExParameter {
                     put("19", "coral");
                     put("21", "coral");
                 }
-            }, false, "");
+            }, false, "gcd,abs");
 
     public static final SymExParameter Rational_simplify = new SymExParameter("${jpf-shadow-plus}/build/jpf-shadow-plus.jar",
             "${jpf-shadow-plus}/src/examples", "jpf2019.rational.simplify", "Rational", "simplify", // "main",
@@ -98,15 +98,15 @@ public class SymExParameter {
                     put("23", "coral");
                     put("25", "coral");
                 }
-            }, false, "");
+            }, false, "simplify,gcd,abs");
 
 
     public static final SymExParameter WBS_update = new SymExParameter("${jpf-shadow-plus}/build/jpf-shadow-plus.jar",
             "${jpf-shadow-plus}/src/examples", "jpf2019.wbs.update", "WBS", "main", "update(sym#sym#sym)", 10, "",
-            "evaluation-results/02_WBS/update/shadow-plus-results/", null, false, "");
+            "evaluation-results/02_WBS/update/shadow-plus-results/", null, false, "update");
 
     public static final SymExParameter WBS_launch = new SymExParameter("${jpf-shadow-plus}/build/jpf-shadow-plus.jar",
             "${jpf-shadow-plus}/src/examples", "jpf2019.wbs.launch", "WBS", "main", "launch(sym#sym#sym#sym#sym#sym#sym#sym#sym)", 10, "",
-            "evaluation-results/02_WBS/launch/shadow-plus-results/", null, false, "");
+            "evaluation-results/02_WBS/launch/shadow-plus-results/", null, false, "launch,update");
 
 }

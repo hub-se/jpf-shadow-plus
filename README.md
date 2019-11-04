@@ -29,9 +29,9 @@ Otherwise follow the instructions: Please create the file "~/.jpf/site.propertie
 
 3. To run the jpf-shadow-plus experiments \[Note: this commands runs longer (~30min)\]:
 ```
-DYLD_LIBRARY_PATH=jpf-symbc/lib java -cp "jpf-shadow-plus/build/*:jpf-core/build/*:jpf-symbc/build/*:jpf-symbc/lib/*" gov.nasa.jpf.shadow.RunnerShadowPlus
+DYLD_LIBRARY_PATH=jpf-symbc/lib java -cp "jpf-shadow-plus/build/*:jpf-core/build/*:jpf-symbc/build/*:jpf-symbc/lib/*:SootConnection/build/*:SootConnection/lib/*" gov.nasa.jpf.shadow.RunnerShadowPlus
 ```
- 
+
 4. To run the jpf-shadow experiments \[Note: this commands runs longer (~3min)\]:
 ```
 DYLD_LIBRARY_PATH=jpf-symbc/lib java -cp "jpf-shadow/build/*:jpf-core/build/*:jpf-symbc/build/*:jpf-symbc/lib/*" gov.nasa.jpf.shadow.RunnerShadow_JPF

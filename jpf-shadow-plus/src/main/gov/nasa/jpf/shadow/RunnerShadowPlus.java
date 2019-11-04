@@ -21,208 +21,210 @@ import gov.nasa.jpf.symbc.SymbolicListener;
  */
 public class RunnerShadowPlus {
 
-    public static void main(String[] args) {
-        System.out.println(">> Started Runner for jpf-shadow-plus ...");
+	public static void main(String[] args) {
+		System.out.println(">> Started Runner for jpf-shadow-plus ...");
 
-        SymExParameter[] subjects = {
-                 SymExParameter.Foo,
-                 SymExParameter.Joda_LocalToUTC,
-                 SymExParameter.Rational_abs,
-                 SymExParameter.Rational_gcd,
-                 SymExParameter.Rational_simplify,
-                 SymExParameter.WBS_update,
-                 SymExParameter.WBS_launch,
-                };
+		SymExParameter[] subjects = {
+                SymExParameter.Foo,
+				SymExParameter.Joda_LocalToUTC,
+                SymExParameter.Rational_abs,
+				SymExParameter.Rational_gcd,
+				SymExParameter.Rational_simplify,
+				SymExParameter.WBS_update,
+				SymExParameter.WBS_launch,
+		};
 
-        try {
-            runExperiments(subjects);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+		try {
+			runExperiments(subjects);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    private static Set<MyPathCondition> executeShadowSymbolicExecutionForMethod(SymExParameter param) {
-        ShadowListener shadowListener = null;
-        try {
-            Config conf = initConfig();
-            conf.setProperty("classpath", param.classpath);
-            conf.setProperty("sourcepath", param.sourcepath);
-            conf.setProperty("target", param.packageName + "." + param.className);
+	private static Set<MyPathCondition> executeShadowSymbolicExecutionForMethod(SymExParameter param) {
+		ShadowListener shadowListener = null;
+		try {
+			Config conf = initConfig();
+			conf.setProperty("classpath", param.classpath);
+			conf.setProperty("sourcepath", param.sourcepath);
+			conf.setProperty("target", param.packageName + "." + param.className);
 
-            StringBuilder sb = new StringBuilder();
-            for (String method : param.methodNameWithSymbolicParameter.split(",")) {
-                sb.append(param.packageName);
-                sb.append(".");
-                sb.append(param.className);
-                sb.append(".");
-                sb.append(method);
-                sb.append(",");
-            }
-            conf.setProperty("symbolic.method", sb.toString());
+			StringBuilder sb = new StringBuilder();
+			for (String method : param.methodNameWithSymbolicParameter.split(",")) {
+				sb.append(param.packageName);
+				sb.append(".");
+				sb.append(param.className);
+				sb.append(".");
+				sb.append(method);
+				sb.append(",");
+			}
+			conf.setProperty("symbolic.method", sb.toString());
 
-            if (param.constraintSolver == null) {
-                conf.setProperty("symbolic.dp", "choco");
-            } else {
-                String currentSubject = param.className.substring(param.className.indexOf("_") + 1,
-                        param.className.length() - 1);
-                String solver = param.constraintSolver.get(currentSubject);
-                if (solver == null) {
-                    conf.setProperty("symbolic.dp", "choco");
-                } else {
-                    conf.setProperty("symbolic.dp", solver);
-                }
-            }
+			if (param.constraintSolver == null) {
+				conf.setProperty("symbolic.dp", "choco");
+			} else {
+				String currentSubject = param.className.substring(param.className.indexOf("_") + 1,
+						param.className.length() - 1);
+				String solver = param.constraintSolver.get(currentSubject);
+				if (solver == null) {
+					conf.setProperty("symbolic.dp", "choco");
+				} else {
+					conf.setProperty("symbolic.dp", solver);
+				}
+			}
 
-            conf.setProperty("symbolic.dp", "z3"); // TODO remove later
+			conf.setProperty("symbolic.dp", "z3"); // TODO remove later
 
-            if (param.useDirectedSymEx) {
-                conf.setProperty("shadow.directedSearch", "true");
-                conf.setProperty("shadow.allMethods", param.allMethods);
-            }
+			if (param.useDirectedSymEx) {
+				conf.setProperty("shadow.directedSearch", "true");
+				conf.setProperty("shadow.allMethods", param.allMethods);
+				ShadowInstructionFactory.directedSymEx = true;
+			}
 
-            JPF jpf = new JPF(conf);
-            shadowListener = new ShadowListener(conf, jpf);
-            jpf.addListener(shadowListener);
-            jpf.run();
-            if (jpf.foundErrors()) {
-                System.out.println("#FOUND ERRORS = " + jpf.getSearchErrors().size());
-            }
-            return shadowListener.collectedPCs;
-        } catch (JPFConfigException cx) {
-            cx.printStackTrace();
-            if (shadowListener != null) {
-                return shadowListener.collectedPCs;
-            }
-        } catch (JPFException jx) {
-            jx.printStackTrace();
-            if (shadowListener != null) {
-                return shadowListener.collectedPCs;
-            }
-        }
-        return null;
-    }
+			JPF jpf = new JPF(conf);
+			shadowListener = new ShadowListener(conf, jpf);
+			jpf.addListener(shadowListener);
+			jpf.run();
+			if (jpf.foundErrors()) {
+				System.out.println("#FOUND ERRORS = " + jpf.getSearchErrors().size());
+			}
+			return shadowListener.collectedPCs;
+		} catch (JPFConfigException cx) {
+			cx.printStackTrace();
+			if (shadowListener != null) {
+				return shadowListener.collectedPCs;
+			}
+		} catch (JPFException jx) {
+			jx.printStackTrace();
+			if (shadowListener != null) {
+				return shadowListener.collectedPCs;
+			}
+		}
+		return null;
+	}
 
-    private static Config initConfig() {
-        Config conf = JPF.createConfig(new String[0]);
-        conf.setProperty("symbolic.min_int", "-100");
-        conf.setProperty("symbolic.max_int", "100");
-        conf.setProperty("symbolic.min_double", "-100.0");
-        conf.setProperty("symbolic.max_double", "100.0");
-        conf.setProperty("symbolic.undefined", "-1000");
-        conf.setProperty("search.multiple_errors", "true");
-        conf.setProperty("jvm.insn_factory.class", "gov.nasa.jpf.symbc.SymbolicInstructionFactory");
-        conf.setProperty("vm.storage.class", "nil");
-        // conf.setProperty("search.depth_limit", "30"); // default = null, i.e.
-        conf.setProperty("symbolic.optimizechoices", "false");
-        return conf;
-    }
+	private static Config initConfig() {
+		Config conf = JPF.createConfig(new String[0]);
+		conf.setProperty("symbolic.min_int", "-100");
+		conf.setProperty("symbolic.max_int", "100");
+		conf.setProperty("symbolic.min_double", "-100.0");
+		conf.setProperty("symbolic.max_double", "100.0");
+		conf.setProperty("symbolic.undefined", "-1000");
+		conf.setProperty("search.multiple_errors", "true");
+		conf.setProperty("jvm.insn_factory.class", "gov.nasa.jpf.symbc.SymbolicInstructionFactory");
+		conf.setProperty("vm.storage.class", "nil");
+		// conf.setProperty("search.depth_limit", "30"); // default = null, i.e.
+		conf.setProperty("symbolic.optimizechoices", "false");
+		return conf;
+	}
 
-    private static void printPathConditions(Set<MyPathCondition> pathConditions, SymExParameter param) {
-        System.out.println(param);
-        System.out.println();
-        if (pathConditions == null) {
-            System.out.println("Terminated unexpectedly with <null>.");
-        } else if (pathConditions.isEmpty()) {
-            System.out.println("PathCondition: FALSE");
-        } else if (pathConditions.size() == 1 && pathConditions.contains(SymbolicListener.TRUE)) {
-            System.out.println("PathCondition: TRUE");
-        } else {
-            int counterViolations = 0;
-            for (MyPathCondition myPC : pathConditions) {
-                if (myPC.equals(SymbolicListener.TRUE)) {
-                    System.out.println("PathCondition: TRUE \n");
-                } else if (myPC.pc != null) {
-                    try {
-                        boolean isSat = myPC.pc.solve();
-                        System.out.println(myPC.pathResultType + "; " + "SAT = " + isSat);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                        System.out.println(myPC.pathResultType + "; " + "SAT = UNKNOWN NPE");
-                    }
-                    Map<String, Object> solution = myPC.pc.solveWithValuation();
-                    for (String var : solution.keySet()) {
-                        System.out.println(var + "=" + solution.get(var));
-                    }
+	
+	private static void printPathConditions(Set<MyPathCondition> pathConditions, SymExParameter param) {
+		System.out.println(param);
+		System.out.println();
+		if (pathConditions == null) {
+			System.out.println("Terminated unexpectedly with <null>.");
+		} else if (pathConditions.isEmpty()) {
+			System.out.println("PathCondition: FALSE");
+		} else if (pathConditions.size() == 1 && pathConditions.contains(SymbolicListener.TRUE)) {
+			System.out.println("PathCondition: TRUE");
+		} else {
+			int counterViolations = 0;
+			for (MyPathCondition myPC : pathConditions) {
+				if (myPC.equals(SymbolicListener.TRUE)) {
+					System.out.println("PathCondition: TRUE \n");
+				} else if (myPC.pc != null) {
+					try {
+						boolean isSat = myPC.pc.solve();
+						System.out.println(myPC.pathResultType + "; " + "SAT = " + isSat);
+					} catch (NullPointerException e) {
+						e.printStackTrace();
+						System.out.println(myPC.pathResultType + "; " + "SAT = UNKNOWN NPE");
+					}
+					Map<String, Object> solution = myPC.pc.solveWithValuation();
+					for (String var : solution.keySet()) {
+						System.out.println(var + "=" + solution.get(var));
+					}
 
-                    System.out.println(myPC.pc + "\n");
+					System.out.println(myPC.pc + "\n");
 
-                    if (myPC.pathResultType == PathResultType.PROPERTY_VIOLATED) {
-                        counterViolations++;
-                    }
-                } else {
-                    throw new RuntimeException("PC is null..");
-                }
-            }
-            System.out.println();
-            System.out.println("#PROPERTY_VIOLATED = " + counterViolations);
-            System.out.println("#Total = " + pathConditions.size());
-        }
-    }
+					if (myPC.pathResultType == PathResultType.PROPERTY_VIOLATED) {
+						counterViolations++;
+					}
+				} else {
+					throw new RuntimeException("PC is null..");
+				}
+			}
+			System.out.println();
+			System.out.println("#PROPERTY_VIOLATED = " + counterViolations);
+			System.out.println("#Total = " + pathConditions.size());
+		}
+	}
 
-    public static void runExperiments(SymExParameter[] subjects) {
+	public static void runExperiments(SymExParameter[] subjects) {
 
-        Set<MyPathCondition> resultingPCs = null;
-        for (SymExParameter subject : subjects) {
+		Set<MyPathCondition> resultingPCs = null;
+		for (SymExParameter subject : subjects) {
 
-            // Run shadow symbolic execution for change-annotated files.
-            for (int i = 1; i <= subject.numberOfClassesInBenchmark; i++) {
+			// Run shadow symbolic execution for change-annotated files.
+			for (int i = 1; i <= subject.numberOfClassesInBenchmark; i++) {
 
-                if (subject.equals(SymExParameter.Rational_gcd) && i==8) {
-                    continue;
-                }
-                if (subject.equals(SymExParameter.Rational_simplify) && i==12) {
-                    continue;
-                }
+				if (subject.equals(SymExParameter.Rational_gcd) && i == 8) {
+					continue;
+				}
+				if (subject.equals(SymExParameter.Rational_simplify) && i == 12) {
+					continue;
+				}
 
-                SymExParameter symExParameter = new SymExParameter(subject.classpath, subject.sourcepath,
-                        subject.packageName, subject.className + "_" + i + "c", subject.methodName,
-                        subject.methodNameWithSymbolicParameter, 1, "", subject.resultsDirectory,
-                        subject.constraintSolver, subject.useDirectedSymEx, subject.allMethods);
-                String logPath = symExParameter.resultsDirectory + "log-" + symExParameter.packageName + "."
-                        + symExParameter.className + ".txt";
-                try {
-                    ensureFileAndDirectoryExists(logPath);
-                    System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream(logPath)), true));
-                } catch (FileNotFoundException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                resultingPCs = executeShadowSymbolicExecutionForMethod(symExParameter);
-                printPathConditions(resultingPCs, symExParameter);
-            }
+				SymExParameter symExParameter = new SymExParameter(subject.classpath, subject.sourcepath,
+						subject.packageName, subject.className + "_" + i + "c", subject.methodName,
+						subject.methodNameWithSymbolicParameter, 1, "", subject.resultsDirectory,
+						subject.constraintSolver, subject.useDirectedSymEx, subject.allMethods);
+				String logPath = symExParameter.resultsDirectory + "log-" + symExParameter.packageName + "."
+						+ symExParameter.className + ".txt";
+				try {
+					ensureFileAndDirectoryExists(logPath);
+					System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream(logPath)), true));
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				resultingPCs = executeShadowSymbolicExecutionForMethod(symExParameter);
+				printPathConditions(resultingPCs, symExParameter);
+			}
 
-            if (!subject.specialBenchmarks.equals("")) {
-                for (String specialBenchmark : subject.specialBenchmarks.split(",")) {
-                    SymExParameter symExParameter = new SymExParameter(subject.classpath, subject.sourcepath,
-                            subject.packageName, subject.className + "_" + specialBenchmark + "c", subject.methodName,
-                            subject.methodNameWithSymbolicParameter, 1, "", subject.resultsDirectory,
-                            subject.constraintSolver, subject.useDirectedSymEx, subject.allMethods);
-                    String logPath = symExParameter.resultsDirectory + "log-" + symExParameter.packageName + "."
-                            + symExParameter.className + ".txt";
-                    try {
-                        ensureFileAndDirectoryExists(logPath);
-                        System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream(logPath)), true));
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+			if (!subject.specialBenchmarks.equals("")) {
+				for (String specialBenchmark : subject.specialBenchmarks.split(",")) {
+					SymExParameter symExParameter = new SymExParameter(subject.classpath, subject.sourcepath,
+							subject.packageName, subject.className + "_" + specialBenchmark + "c", subject.methodName,
+							subject.methodNameWithSymbolicParameter, 1, "", subject.resultsDirectory,
+							subject.constraintSolver, subject.useDirectedSymEx, subject.allMethods);
+					String logPath = symExParameter.resultsDirectory + "log-" + symExParameter.packageName + "."
+							+ symExParameter.className + ".txt";
+					try {
+						ensureFileAndDirectoryExists(logPath);
+						System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream(logPath)), true));
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 
-                    resultingPCs = executeShadowSymbolicExecutionForMethod(symExParameter);
-                    printPathConditions(resultingPCs, symExParameter);
-                }
-            }
+					resultingPCs = executeShadowSymbolicExecutionForMethod(symExParameter);
+					printPathConditions(resultingPCs, symExParameter);
+				}
+			}
 
-        }
-    }
+		}
+	}
 
-    private static void ensureFileAndDirectoryExists(String path) throws IOException {
-        File file = new File(path);
-        if (!file.isFile()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-        }
-    }
+	private static void ensureFileAndDirectoryExists(String path) throws IOException {
+		File file = new File(path);
+		if (!file.isFile()) {
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+		}
+	}
 
 }

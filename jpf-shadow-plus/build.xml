@@ -57,6 +57,12 @@
     <pathelement path="${jpf-core.native_classpath}"/>
   	<pathelement path="${jpf-symbc.native_classpath}"/>
 
+    <!-- SootConnection -->
+    <pathelement path="../SootConnection/build"/>
+    <fileset dir="../SootConnection">
+        <include name="lib/*"/>
+    </fileset>
+
   </path>
 
   <!-- init: common initialization -->
@@ -68,7 +74,6 @@
     <!-- the things that have to be in the classpath of whatever runs Ant -->
     <available property="have_javac" classname="com.sun.tools.javac.Main"/>
     <fail unless="have_javac">no javac found</fail>
-
 
     <available file="src/main"        type="dir" property="have_main"/>
     <available file="src/annotations" type="dir" property="have_annotations"/>

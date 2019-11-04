@@ -42,6 +42,14 @@ ant clean >> build.log
 ant >> build.log
 cd ..
 
+# Build SootConnection
+echo "Build SootConnection ..."
+cd "SootConnection"
+rm -f build.log
+ant clean >> build.log
+ant >> build.log
+cd ..
+
 # Build jpf-shadow-plus
 echo "Build jpf-shadow-plus ..."
 cd "jpf-shadow-plus"

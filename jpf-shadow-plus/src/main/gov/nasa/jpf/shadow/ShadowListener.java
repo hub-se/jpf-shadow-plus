@@ -2,20 +2,7 @@ package gov.nasa.jpf.shadow;
 
 
 import gov.nasa.jpf.Config;
-
 import gov.nasa.jpf.JPF;
-import gov.nasa.jpf.PropertyListenerAdapter;
-import gov.nasa.jpf.vm.ChoiceGenerator;
-import gov.nasa.jpf.vm.ClassInfo;
-import gov.nasa.jpf.vm.DynamicElementInfo;
-import gov.nasa.jpf.vm.Instruction;
-import gov.nasa.jpf.vm.LocalVarInfo;
-import gov.nasa.jpf.vm.MethodInfo;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.ThreadInfo;
-import gov.nasa.jpf.vm.ThreadInfo.Execute;
-import gov.nasa.jpf.vm.Types;
-import gov.nasa.jpf.vm.VM;
 /*
 import gov.nasa.jpf.jvm.bytecode.ARETURN;
 import gov.nasa.jpf.jvm.bytecode.DRETURN;
@@ -24,41 +11,42 @@ import gov.nasa.jpf.jvm.bytecode.IRETURN;
 import gov.nasa.jpf.jvm.bytecode.JVMInvokeInstruction;
 import gov.nasa.jpf.jvm.bytecode.LRETURN;
 import gov.nasa.jpf.jvm.bytecode.JVMReturnInstruction;*/
-import gov.nasa.jpf.jvm.bytecode.*;
-import gov.nasa.jpf.report.ConsolePublisher;
-import gov.nasa.jpf.report.Publisher;
-import gov.nasa.jpf.report.PublisherExtension;
-import gov.nasa.jpf.search.Search;
+import gov.nasa.jpf.jvm.bytecode.GOTO;
+import gov.nasa.jpf.jvm.bytecode.ICONST;
+import gov.nasa.jpf.jvm.bytecode.IF_ICMPEQ;
+import gov.nasa.jpf.jvm.bytecode.IF_ICMPGE;
+import gov.nasa.jpf.jvm.bytecode.IF_ICMPGT;
+import gov.nasa.jpf.jvm.bytecode.IF_ICMPLE;
+import gov.nasa.jpf.jvm.bytecode.IF_ICMPLT;
+import gov.nasa.jpf.jvm.bytecode.IF_ICMPNE;
+import gov.nasa.jpf.jvm.bytecode.IfInstruction;
+import gov.nasa.jpf.jvm.bytecode.JVMInvokeInstruction;
+import gov.nasa.jpf.jvm.bytecode.JVMReturnInstruction;
+import gov.nasa.jpf.jvm.bytecode.RETURN;
+import gov.nasa.jpf.shadow.util.DistanceAnalyzer;
+import gov.nasa.jpf.symbc.SymbolicListener;
 //import gov.nasa.jpf.shadow.util.DistanceAnalyzer;
 import gov.nasa.jpf.symbc.bytecode.BytecodeUtils;
-import gov.nasa.jpf.symbc.bytecode.IFEQ;
-import gov.nasa.jpf.symbc.bytecode.INVOKESTATIC;
-import gov.nasa.jpf.symbc.concolic.PCAnalyzer;
-import gov.nasa.jpf.symbc.numeric.*;
+import gov.nasa.jpf.symbc.numeric.Comparator;
+import gov.nasa.jpf.symbc.numeric.DiffExpression;
+import gov.nasa.jpf.symbc.numeric.ExecExpression;
+import gov.nasa.jpf.symbc.numeric.IntegerExpression;
+import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
+import gov.nasa.jpf.symbc.numeric.PathCondition;
 import gov.nasa.jpf.symbc.numeric.PathCondition.Diff;
-//import gov.nasa.jpf.symbc.numeric.SymbolicInteger;
-import gov.nasa.jpf.util.FieldSpec;
+import gov.nasa.jpf.symbc.numeric.RealExpression;
+import gov.nasa.jpf.symbc.numeric.ShadowPCChoiceGenerator;
 import gov.nasa.jpf.util.MethodSpec;
-import gov.nasa.jpf.util.Pair;
-
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import java.lang.Object;
-
-import gov.nasa.jpf.symbc.SymbolicListener;
-
-//import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
+import gov.nasa.jpf.vm.ChoiceGenerator;
+import gov.nasa.jpf.vm.Instruction;
+import gov.nasa.jpf.vm.MethodInfo;
+import gov.nasa.jpf.vm.StackFrame;
+import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.ThreadInfo.Execute;
+import gov.nasa.jpf.vm.VM;
 
 //public class ShadowListener extends PropertyListenerAdapter{ 
-public class ShadowListener extends SymbolicListener{
+public class ShadowListener extends SymbolicListener {
 	
 	//Method specifications for the change()-methods
 	MethodSpec[] changeMethods = new MethodSpec[5]; 
@@ -70,7 +58,7 @@ public class ShadowListener extends SymbolicListener{
 	Instruction endOfBlock; 
 	
 	//Reachability information for directed symbolic execution
-//	DistanceAnalyzer distanceAnalyzer;
+	DistanceAnalyzer distanceAnalyzer;
 	
 	public ShadowListener(Config conf, JPF jpf) {
 		super(conf,jpf);
@@ -83,7 +71,7 @@ public class ShadowListener extends SymbolicListener{
 		changeMethods[4] = MethodSpec.createMethodSpec("*.change(long,long)");
 		
 		if(ShadowInstructionFactory.directedSymEx){
-//			distanceAnalyzer = new DistanceAnalyzer(conf);
+			distanceAnalyzer = new DistanceAnalyzer(conf);
 		}
 	}
 	
@@ -564,32 +552,32 @@ public class ShadowListener extends SymbolicListener{
 		int elseLineNumber = insn.getTarget().getLineNumber();
 		
 		//reachability information based on the actual source code
-//		boolean exploreTruePath = this.distanceAnalyzer.checkReachability(ifLineNumber, insn.getMethodInfo().getName());
-//		boolean exploreFalsePath = this.distanceAnalyzer.checkReachability(elseLineNumber, insn.getMethodInfo().getName());
-//		
-//		if(exploreTruePath){
-//			if(exploreFalsePath){
-//				//both paths can reach a change()-method, choices: 0,1 (true and false path)
-//				curCg.resetAndSetChoices(0, 1, 1);
-//				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->True/False");
-//			}
-//			else{
-//				//only the true path can reach a change()-method, choice: 1 (see note)
-//				curCg.resetAndSetChoices(1, 1, 1);
-//				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->True");
-//			}
-//		}
-//		else{
-//			if(exploreFalsePath){
-//				//only the false path can reach a change()-method, choice: 0
-//				curCg.resetAndSetChoices(0, 0, 1);
-//				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->False");
-//			}
-//			else{
-//				//none of the two paths can reach a change()-method, backtrack?
-//				curCg.setDone();
-//				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->None");
-//			}
-//		}	
+		boolean exploreTruePath = this.distanceAnalyzer.checkReachability(ifLineNumber, insn.getMethodInfo().getName());
+		boolean exploreFalsePath = this.distanceAnalyzer.checkReachability(elseLineNumber, insn.getMethodInfo().getName());
+		
+		if(exploreTruePath){
+			if(exploreFalsePath){
+				//both paths can reach a change()-method, choices: 0,1 (true and false path)
+				curCg.resetAndSetChoices(0, 1, 1);
+				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->True/False");
+			}
+			else{
+				//only the true path can reach a change()-method, choice: 1 (see note)
+				curCg.resetAndSetChoices(1, 1, 1);
+				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->True");
+			}
+		}
+		else{
+			if(exploreFalsePath){
+				//only the false path can reach a change()-method, choice: 0
+				curCg.resetAndSetChoices(0, 0, 1);
+				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->False");
+			}
+			else{
+				//none of the two paths can reach a change()-method, backtrack?
+				curCg.setDone();
+				if(ShadowInstructionFactory.debugDirectedSymEx) System.out.println("If-insn at line: "+ifLineNumber+"->None");
+			}
+		}	
 	}
 }
