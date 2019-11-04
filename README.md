@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/207503090.svg)](https://zenodo.org/badge/latestdoi/207503090)
 # Complete Shadow Symbolic Execution with Java PathFinder
 
 This repository provides the tool ShadowJPF+ and the evaluation subjects for the paper *Complete Shadow Symbolic Execution with Java PathFinder* accepted for the [Java PathFinder workshop 2019](https://2019.ase-conferences.org/home/jpf-2019), co-located with [ASE 2019](https://2019.ase-conferences.org). The paper will be published in the ACM SIGSOFT Software Engineering Notes, and a pre-print is available [here](https://yannicnoller.github.io/publications/jpf2019_noller_jpfshadow+.pdf).
