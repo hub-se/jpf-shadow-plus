@@ -1,6 +1,7 @@
 build.properties
 nbproject/private/*
 build/*
+evaluation-results/*
 dist/*
 *.class
 .version
